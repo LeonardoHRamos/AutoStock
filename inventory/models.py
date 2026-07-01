@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -47,3 +48,57 @@ class Produto(models.Model):
 
     def __str__(self):
         return f"{self.codigo_interno} - {self.category.name}"
+
+
+class Movimentacao(models.Model):
+    ENTRADA = "entrada"
+    SAIDA = "saida"
+    TIPO_CHOICES = [
+        (ENTRADA, "Entrada"),
+        (SAIDA, "Saída"),
+    ]
+
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.PROTECT,
+        related_name="movimentacoes",
+        verbose_name="Produto"
+    )
+
+    tipo = models.CharField(
+        max_length=10,
+        choices=TIPO_CHOICES,
+        verbose_name="Tipo"
+    )
+
+    quantidade = models.PositiveIntegerField(
+        verbose_name="Quantidade"
+    )
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        verbose_name="Usuário"
+    )
+
+    data = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Data"
+    )
+
+    observacao = models.TextField(
+        blank=True,
+        verbose_name="Observação"
+    )
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} - {self.produto.codigo_interno} ({self.quantidade})"
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            delta = self.quantidade if self.tipo == self.ENTRADA else -self.quantidade
+            Produto.objects.filter(pk=self.produto_id).update(
+                quantidade=models.F("quantidade") + delta
+            )
