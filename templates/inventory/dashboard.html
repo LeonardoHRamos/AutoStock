@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — AutoStock{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Dashboard</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-bg-primary h-100">
+            <div class="card-body">
+                <div class="small text-uppercase">Produtos cadastrados</div>
+                <div class="display-6">{{ total_produtos }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-bg-danger h-100">
+            <div class="card-body">
+                <div class="small text-uppercase">Produtos críticos (≤ {{ estoque_critico }})</div>
+                <div class="display-6">{{ produtos_criticos|length }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-bg-success h-100">
+            <div class="card-body">
+                <div class="small text-uppercase">Entradas no mês</div>
+                <div class="display-6">{{ entradas_mes }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-bg-warning h-100">
+            <div class="card-body">
+                <div class="small text-uppercase">Saídas no mês</div>
+                <div class="display-6">{{ saidas_mes }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Quantidade por categoria</div>
+            <div class="card-body">
+                <canvas id="chartCategoria"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Produtos mais utilizados (total de saídas)</div>
+            <div class="card-body">
+                <canvas id="chartMaisUtilizados"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Produtos críticos (estoque ≤ {{ estoque_critico }})</div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Código interno</th>
+                    <th>Categoria</th>
+                    <th class="text-end">Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos_criticos %}
+                <tr>
+                    <td>{{ produto.codigo_interno }}</td>
+                    <td>{{ produto.category.name }}</td>
+                    <td class="text-end">{{ produto.quantidade }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-3">Nenhum produto em nível crítico.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{ categoria_labels|json_script:"categoria-labels" }}
+{{ categoria_values|json_script:"categoria-values" }}
+{{ mais_utilizados_labels|json_script:"mais-utilizados-labels" }}
+{{ mais_utilizados_values|json_script:"mais-utilizados-values" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const readJSON = (id) => JSON.parse(document.getElementById(id).textContent);
+
+    new Chart(document.getElementById("chartCategoria"), {
+        type: "bar",
+        data: {
+            labels: readJSON("categoria-labels"),
+            datasets: [{
+                label: "Quantidade em estoque",
+                data: readJSON("categoria-values"),
+                backgroundColor: "#0d6efd",
+            }],
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } },
+    });
+
+    new Chart(document.getElementById("chartMaisUtilizados"), {
+        type: "bar",
+        data: {
+            labels: readJSON("mais-utilizados-labels"),
+            datasets: [{
+                label: "Total de saídas",
+                data: readJSON("mais-utilizados-values"),
+                backgroundColor: "#ffc107",
+            }],
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            plugins: { legend: { display: false } },
+        },
+    });
+</script>
+{% endblock %}
