@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-6h#s7(=w=xj6f@#_v&oo^t474d2t3mlyj0ra&3628l=eo=m*nj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Uso interno na rede local (acesso pelo IP do PC que hospeda o AutoStock).
+# Ao migrar para o servidor sempre ligado, restringir para o hostname/IP dele.
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
