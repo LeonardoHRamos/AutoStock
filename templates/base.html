@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br" data-bs-theme="dark">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}AutoStock{% endblock %}</title>
     <script>
-        // Aplica o tema salvo antes do paint (evita flash).
+        // Aplica o tema salvo antes do paint (evita flash). Precisa ser inline.
         (function () {
             try {
                 var t = localStorage.getItem("autostock-theme");
@@ -16,158 +17,7 @@
         })();
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* ---- Paleta clara (validada) ---------------------------------- */
-        [data-bs-theme="light"] {
-            --bs-body-bg: #f9f9f7;
-            --bs-body-color: #0b0b0b;
-            --bs-border-color: rgba(11, 11, 11, 0.10);
-            --bs-secondary-color: #52514e;
-            --bs-card-bg: #ffffff;
-            --bs-card-border-color: rgba(11, 11, 11, 0.08);
-            --bs-card-cap-bg: transparent;
-
-            --surface-2: #f0efec;
-            --ink-primary: #0b0b0b;
-            --ink-secondary: #52514e;
-            --ink-muted: #898781;
-            --grid: #e1e0d9;
-            --baseline: #c3c2b7;
-            --accent: #2a78d6;
-            --accent-hover: #1c5cab;
-            --good: #0ca30c;
-            --warning: #fab219;
-            --critical: #d03b3b;
-            --qty-bg: rgba(208, 59, 59, 0.12);
-            --qty-fg: #c02a2a;
-        }
-
-        /* ---- Paleta escura (validada) --------------------------------- */
-        [data-bs-theme="dark"] {
-            --bs-body-bg: #0d0d0d;
-            --bs-body-color: #f4f4f2;
-            --bs-emphasis-color: #ffffff;
-            --bs-border-color: rgba(255, 255, 255, 0.10);
-            --bs-secondary-color: #c3c2b7;
-            --bs-card-bg: #1a1a19;
-            --bs-card-border-color: rgba(255, 255, 255, 0.10);
-            --bs-card-cap-bg: transparent;
-
-            --surface-2: #211f1e;
-            --ink-primary: #ffffff;
-            --ink-secondary: #c3c2b7;
-            --ink-muted: #898781;
-            --grid: #2c2c2a;
-            --baseline: #383835;
-            --accent: #3987e5;
-            --accent-hover: #5598e7;
-            --good: #0ca30c;
-            --warning: #fab219;
-            --critical: #d03b3b;
-            --qty-bg: rgba(208, 59, 59, 0.18);
-            --qty-fg: #f08a8a;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ---- Navbar (escura nos dois temas, por design) --------------- */
-        .navbar {
-            background: #141413;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .navbar .navbar-brand { color: #ffffff; font-weight: 600; letter-spacing: 0.02em; }
-        .navbar .navbar-text { color: #c3c2b7; }
-        .navbar-brand .brand-dot {
-            display: inline-block;
-            width: 9px; height: 9px;
-            margin-right: 8px;
-            border-radius: 50%;
-            background: #3987e5;
-            vertical-align: middle;
-        }
-        .theme-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px; height: 31px;
-            padding: 0;
-        }
-        .theme-toggle svg { width: 17px; height: 17px; }
-        [data-bs-theme="dark"] .theme-toggle .icon-moon,
-        [data-bs-theme="light"] .theme-toggle .icon-sun { display: none; }
-
-        /* ---- Cards ----------------------------------------------------- */
-        .card { border-radius: 14px; }
-        .card-header {
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-            color: var(--ink-secondary);
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-        }
-
-        /* ---- Stat tiles ------------------------------------------------ */
-        .stat-tile .card-body { padding: 1.25rem 1.35rem; }
-        .stat-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; }
-        .stat-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px; height: 38px;
-            border-radius: 10px;
-            flex: 0 0 auto;
-        }
-        .stat-icon svg { width: 20px; height: 20px; }
-        .stat-icon--accent   { background: rgba(57, 135, 229, 0.16); color: var(--accent); }
-        .stat-icon--critical { background: rgba(208, 59, 59, 0.16);  color: var(--critical); }
-        .stat-icon--good     { background: rgba(12, 163, 12, 0.16);  color: var(--good); }
-        .stat-icon--warning  { background: rgba(250, 178, 25, 0.18); color: #b9820a; }
-        [data-bs-theme="dark"] .stat-icon--warning { color: var(--warning); }
-
-        .stat-label { font-size: 0.82rem; font-weight: 500; color: var(--ink-secondary); line-height: 1.15; }
-        .stat-value {
-            font-size: 2.35rem; font-weight: 600; line-height: 1;
-            color: var(--ink-primary); letter-spacing: -0.02em;
-        }
-        .stat-sub { margin-top: 0.35rem; font-size: 0.78rem; color: var(--ink-muted); }
-
-        /* ---- Chart box ------------------------------------------------- */
-        .chart-box { position: relative; height: 320px; }
-        .chart-empty {
-            height: 320px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-align: center; color: var(--ink-muted); gap: 0.5rem;
-        }
-        .chart-empty svg { width: 34px; height: 34px; opacity: 0.7; }
-
-        /* ---- Tabela ---------------------------------------------------- */
-        .table { --bs-table-bg: transparent; margin-bottom: 0; }
-        .table > :not(caption) > * > * { padding: 0.75rem 1rem; }
-        .table thead th {
-            font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
-            color: var(--ink-muted); font-weight: 600; border-bottom-color: var(--bs-border-color);
-        }
-        .table tbody td { border-color: var(--bs-border-color); vertical-align: middle; }
-        .num { font-variant-numeric: tabular-nums; }
-        .dot {
-            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-            margin-right: 8px; background: var(--critical); vertical-align: middle;
-        }
-        .qty-badge {
-            display: inline-block; min-width: 2.4rem;
-            padding: 0.15rem 0.55rem; border-radius: 999px;
-            font-weight: 600; font-variant-numeric: tabular-nums;
-            background: var(--qty-bg); color: var(--qty-fg);
-        }
-
-        .page-title { font-weight: 600; letter-spacing: -0.01em; }
-        .page-subtitle { color: var(--ink-muted); font-size: 0.9rem; }
-    </style>
+    <link href="{% static 'css/autostock.css' %}" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
@@ -192,20 +42,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script>
-        // Toggle de tema: alterna, persiste e avisa quem precisa (gráficos).
-        (function () {
-            var btn = document.getElementById("themeToggle");
-            if (!btn) return;
-            btn.addEventListener("click", function () {
-                var cur = document.documentElement.getAttribute("data-bs-theme") === "light" ? "light" : "dark";
-                var next = cur === "light" ? "dark" : "light";
-                document.documentElement.setAttribute("data-bs-theme", next);
-                try { localStorage.setItem("autostock-theme", next); } catch (e) {}
-                window.dispatchEvent(new CustomEvent("themechange", { detail: next }));
-            });
-        })();
-    </script>
+    <script src="{% static 'js/theme.js' %}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

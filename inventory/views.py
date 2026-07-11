@@ -1,3 +1,5 @@
+"""Views do app de inventário. Por ora, apenas o dashboard de visão geral."""
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render
@@ -6,13 +8,14 @@ from django.utils import timezone
 from .models import Category, Movimentacao, Produto
 
 # Limiar de estoque para considerar um produto "crítico".
-# O handoff não previa campo de estoque mínimo por produto; usar constante
-# ajustável até que essa regra de negócio seja definida.
+# Não há campo de estoque mínimo por produto (regra de negócio ainda não
+# definida); usar esta constante ajustável até que exista.
 ESTOQUE_CRITICO = 5
 
 
 @login_required
 def dashboard(request):
+    """Reúne os indicadores e as séries dos gráficos da tela inicial."""
     produtos_criticos = (
         Produto.objects
         .select_related("category")
@@ -20,6 +23,7 @@ def dashboard(request):
         .order_by("quantidade")
     )
 
+    # Ranking por total de saídas (vazio enquanto não houver saídas).
     mais_utilizados = list(
         Produto.objects
         .filter(movimentacoes__tipo=Movimentacao.SAIDA)

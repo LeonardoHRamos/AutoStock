@@ -3,6 +3,8 @@ from django.db import models
 
 
 class Category(models.Model):
+    """Agrupa os produtos por tipo (SSDs, Cabos, Scanners, ...)."""
+
     name = models.CharField(
         max_length=100,
         unique=True,
@@ -18,11 +20,23 @@ class Category(models.Model):
         auto_now_add=True
     )
 
+    class Meta:
+        verbose_name = "Categoria"
+        verbose_name_plural = "Categorias"
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
 
 
 class Produto(models.Model):
+    """Item de estoque.
+
+    A ``quantidade`` é um valor DERIVADO: nunca é editada à mão, e sim
+    recalculada a cada ``Movimentacao`` (ver ``Movimentacao.save``). Por isso
+    ela é somente-leitura no admin.
+    """
+
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
@@ -53,11 +67,23 @@ class Produto(models.Model):
         verbose_name="Quantidade"
     )
 
+    class Meta:
+        verbose_name = "Produto"
+        verbose_name_plural = "Produtos"
+        ordering = ["nome"]
+
     def __str__(self):
         return self.nome
 
 
 class Movimentacao(models.Model):
+    """Entrada ou saída de um produto no estoque.
+
+    É a fonte da verdade do saldo: ao ser criada, ajusta a ``quantidade`` do
+    produto correspondente. Edições posteriores NÃO reajustam o saldo (só a
+    criação conta), mantendo o histórico imutável na prática.
+    """
+
     ENTRADA = "entrada"
     SAIDA = "saida"
     TIPO_CHOICES = [
@@ -98,10 +124,16 @@ class Movimentacao(models.Model):
         verbose_name="Observação"
     )
 
+    class Meta:
+        verbose_name = "Movimentação"
+        verbose_name_plural = "Movimentações"
+        ordering = ["-data"]
+
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.produto.nome} ({self.quantidade})"
 
     def save(self, *args, **kwargs):
+        # O saldo do produto só é ajustado na criação da movimentação.
         is_new = self._state.adding
         super().save(*args, **kwargs)
         if is_new:
