@@ -99,7 +99,7 @@ class Movimentacao(models.Model):
     )
 
     def __str__(self):
-        return f"{self.get_tipo_display()} - {self.produto.codigo_interno} ({self.quantidade})"
+        return f"{self.get_tipo_display()} - {self.produto.nome} ({self.quantidade})"
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding

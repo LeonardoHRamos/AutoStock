@@ -51,7 +51,7 @@ def dashboard(request):
         # Séries para os gráficos (Chart.js), serializadas via json_script.
         "categoria_labels": [c.name for c in por_categoria],
         "categoria_values": [c.total or 0 for c in por_categoria],
-        "mais_utilizados_labels": [p.codigo_interno for p in mais_utilizados],
+        "mais_utilizados_labels": [p.nome for p in mais_utilizados],
         "mais_utilizados_values": [p.total_saida or 0 for p in mais_utilizados],
     }
     return render(request, "inventory/dashboard.html", context)
