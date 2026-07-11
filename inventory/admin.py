@@ -10,9 +10,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Produto)
 class ProdutoAdmin(admin.ModelAdmin):
-    list_display = ("codigo_interno", "category", "quantidade")
+    list_display = ("nome", "category", "codigo_interno", "quantidade")
     list_filter = ("category",)
-    search_fields = ("codigo_interno", "descricao")
+    search_fields = ("nome", "codigo_interno", "descricao")
     readonly_fields = ("quantidade",)
 
 

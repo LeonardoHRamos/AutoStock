@@ -30,9 +30,16 @@ class Produto(models.Model):
         verbose_name="Categoria"
     )
 
+    nome = models.CharField(
+        max_length=200,
+        verbose_name="Nome"
+    )
+
     codigo_interno = models.CharField(
         max_length=50,
         unique=True,
+        null=True,
+        blank=True,
         verbose_name="Código interno"
     )
 
@@ -47,7 +54,7 @@ class Produto(models.Model):
     )
 
     def __str__(self):
-        return f"{self.codigo_interno} - {self.category.name}"
+        return self.nome
 
 
 class Movimentacao(models.Model):
