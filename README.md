@@ -1,64 +1,63 @@
 # AutoStock
 
-Sistema web para gestão de estoque desenvolvido com **Python** e **Django**, criado para controlar componentes utilizados em ambientes industriais.
+Sistema web de gestão de estoque desenvolvido com **Python** e **Django**, criado para controlar componentes utilizados em ambientes industriais.
 
-O sistema centraliza o cadastro de produtos, registra movimentações de entrada e saída, calcula automaticamente o saldo de cada item e disponibiliza indicadores operacionais em um dashboard responsivo.
+O sistema centraliza o cadastro de produtos, registra movimentações de entrada e saída, calcula automaticamente o saldo de cada item e apresenta indicadores operacionais em um dashboard responsivo.
 
-> Todo o repositório utiliza exclusivamente dados fictícios para fins de demonstração e portfólio.
-
----
-
-# Funcionalidades
-
-- Cadastro de produtos
-- Cadastro de categorias
-- Controle de entradas e saídas
-- Atualização automática do estoque
-- Dashboard com indicadores
-- Produtos críticos
-- Histórico completo de movimentações
-- Autenticação integrada ao Django Admin
-- Tema claro e escuro
-- Carga idempotente de dados demonstrativos
-- Documentação automática do modelo de dados
+> Este repositório utiliza exclusivamente dados fictícios para fins de demonstração e portfólio.
 
 ---
 
 # Interface
 
-> As imagens abaixo representam a interface atual da aplicação.
-
-### Dashboard
+## Dashboard
 
 ![Dashboard](docs/images/dashboard.png)
 
-### Catálogo de produtos
+---
 
-![Produtos](docs/images/catalogo.png)
+## Catálogo de Produtos
 
-### Auditoria de movimentações
+![Catálogo](docs/images/catalogo.png)
+
+---
+
+## Auditoria de Movimentações
 
 ![Movimentações](docs/images/movimentacoes.png)
 
 ---
 
+# Funcionalidades
+
+- Cadastro de categorias
+- Cadastro de produtos
+- Registro de entradas de estoque
+- Registro de saídas de estoque
+- Atualização automática do saldo
+- Dashboard com indicadores
+- Produtos críticos
+- Histórico completo das movimentações
+- Autenticação integrada ao Django Admin
+- Tema claro e escuro
+- Documentação automática do modelo de dados
+- Carga idempotente de dados demonstrativos
+
+---
+
 # Arquitetura
 
-O AutoStock foi desenvolvido utilizando uma arquitetura simples baseada no padrão MVC do Django.
+O AutoStock foi desenvolvido utilizando a arquitetura MVC do Django.
 
-Toda a regra de negócio permanece concentrada na aplicação `inventory`, enquanto o projeto `config` contém apenas configurações globais.
+Toda a regra de negócio permanece concentrada na aplicação **inventory**, enquanto o projeto **config** contém apenas configurações globais.
 
-O princípio mais importante do sistema é:
+O principal conceito do sistema é:
 
 > O estoque nunca é alterado manualmente.
 
-O saldo dos produtos é calculado automaticamente a partir das movimentações registradas.
+Cada movimentação registrada gera automaticamente uma atualização no saldo do produto.
 
-Cada entrada adiciona quantidade.
-
-Cada saída reduz quantidade.
-
-Isso mantém o histórico consistente e elimina divergências entre estoque e movimentações.
+Essa abordagem elimina inconsistências entre estoque e histórico, mantendo toda movimentação rastreável.
 
 ---
 
@@ -69,14 +68,14 @@ Isso mantém o histórico consistente e elimina divergências entre estoque e mo
 | Backend | Python 3 |
 | Framework | Django 6 |
 | Banco de dados | SQLite |
-| Frontend | Django Templates |
+| Front-end | Django Templates |
 | Interface | Bootstrap 5 |
 | Gráficos | Chart.js |
 | Configuração | python-dotenv |
 
 ---
 
-# Estrutura do projeto
+# Estrutura
 
 ```
 AutoStock
@@ -85,8 +84,8 @@ AutoStock
 │
 ├── inventory/
 │   ├── models.py
-│   ├── views.py
 │   ├── admin.py
+│   ├── views.py
 │   ├── urls.py
 │   ├── tests.py
 │   └── management/
@@ -96,6 +95,7 @@ AutoStock
 ├── static/
 │
 ├── docs/
+│   └── images/
 │
 ├── manage.py
 │
@@ -105,8 +105,6 @@ AutoStock
 ---
 
 # Modelo de Dados
-
-O domínio principal é composto por três entidades.
 
 ```
 Categoria
@@ -118,13 +116,13 @@ Categoria
 Movimentação
 ```
 
-Uma movimentação representa uma entrada ou saída de estoque.
+Cada movimentação representa uma entrada ou saída de estoque.
 
 O saldo do produto é atualizado automaticamente utilizando operações atômicas.
 
-Categorias e produtos utilizados por movimentações não podem ser removidos, preservando a integridade do histórico.
+Categorias e produtos utilizados por movimentações permanecem protegidos contra exclusão, preservando a integridade do histórico.
 
-A documentação completa do modelo é gerada automaticamente pelo comando:
+A documentação completa pode ser regenerada utilizando:
 
 ```bash
 python manage.py gerar_documentacao
@@ -168,7 +166,7 @@ Instale as dependências.
 pip install -r requirements.txt
 ```
 
-Crie o arquivo `.env`.
+Crie o arquivo de ambiente.
 
 Windows
 
@@ -188,23 +186,35 @@ Execute as migrações.
 python manage.py migrate
 ```
 
-Crie um administrador.
+Crie um usuário administrador.
 
 ```bash
 python manage.py createsuperuser
 ```
 
-Execute o servidor.
+Inicie a aplicação.
 
 ```bash
 python manage.py runserver
+```
+
+Dashboard:
+
+```
+http://localhost:8000/
+```
+
+Admin:
+
+```
+http://localhost:8000/admin/
 ```
 
 ---
 
 # Comandos úteis
 
-Carregar dados demonstrativos.
+Carga de dados demonstrativos.
 
 ```bash
 python manage.py seed_inventario
@@ -222,7 +232,7 @@ Executar testes.
 python manage.py test
 ```
 
-Verificar o projeto.
+Verificações do projeto.
 
 ```bash
 python manage.py check
@@ -232,13 +242,13 @@ python manage.py check
 
 # Testes
 
-O projeto possui testes automatizados cobrindo principalmente:
+O projeto possui testes automatizados cobrindo:
 
-- Atualização automática do estoque
-- Entradas
-- Saídas
-- Integridade das movimentações
-- Carga inicial de dados
+- atualização automática do saldo;
+- entradas e saídas;
+- integridade das movimentações;
+- carga inicial de dados;
+- consistência da regra de negócio.
 
 ---
 
@@ -246,20 +256,20 @@ O projeto possui testes automatizados cobrindo principalmente:
 
 - `.env` não é versionado.
 - `db.sqlite3` permanece apenas localmente.
-- O repositório utiliza somente dados fictícios.
+- O projeto utiliza somente dados fictícios.
 - Configurações sensíveis são carregadas por variáveis de ambiente.
 
 ---
 
 # Roadmap
 
-- [ ] Impedir estoque negativo
+- [ ] Validação de estoque negativo
 - [ ] Movimentações imutáveis
 - [ ] PostgreSQL
 - [ ] Docker
 - [ ] API REST
 - [ ] Controle de permissões por perfil
-- [ ] Histórico detalhado de auditoria
+- [ ] Auditoria avançada
 - [ ] Deploy em produção
 
 ---
@@ -270,12 +280,4 @@ O projeto possui testes automatizados cobrindo principalmente:
 
 Software Engineer • Electrical Engineer
 
-Python • Django • JavaScript • SQL • Industrial Automation
-
-LinkedIn:
-
-https://www.linkedin.com/in/leonardo-henrique-ramos-0821921a1/
-
-GitHub:
-
-https://github.com/LeonardoHRamos
+Python • Django • JavaScript • Industrial Automation
