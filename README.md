@@ -12,7 +12,7 @@ O sistema centraliza o cadastro de produtos, registra movimentações de entrada
 
 ## Dashboard
 
-![Dashboard](docs/images/dashboard.png)
+![Dashboard](docs/images/Dashboard.png)
 
 ---
 
