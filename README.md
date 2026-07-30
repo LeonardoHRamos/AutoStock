@@ -1,119 +1,283 @@
 # AutoStock
 
-O AutoStock é um projeto demonstrativo de gestão de estoque de peças de automação industrial. A aplicação registra entradas e saídas, calcula automaticamente o saldo de cada item e apresenta indicadores e alertas de nível crítico em um dashboard.
+Sistema web de gestão de estoque desenvolvido com **Python** e **Django**, criado para controlar componentes utilizados em ambientes industriais.
 
-O repositório deve ser utilizado com dados demonstrativos. Antes de publicar ou compartilhar uma instalação, confira se bancos locais, arquivos de ambiente e cargas de dados não contêm informações sensíveis.
+O sistema centraliza o cadastro de produtos, registra movimentações de entrada e saída, calcula automaticamente o saldo de cada item e apresenta indicadores operacionais em um dashboard responsivo.
 
-## Stack
+> Este repositório utiliza exclusivamente dados fictícios para fins de demonstração e portfólio.
 
-- **Backend:** Python 3 · Django 6.0
-- **Banco:** SQLite (desenvolvimento)
-- **Frontend:** Templates Django · Bootstrap 5.3 · Chart.js 4 (via CDN)
-- **Configuração de ambiente:** python-dotenv
+---
 
-## Estrutura do projeto
+# Interface
 
-```text
-AutoStock/
-├── config/              # projeto Django: settings, urls, wsgi/asgi
-├── inventory/           # app principal (a regra de negócio vive aqui)
-│   ├── models.py        # Category, Produto, Movimentacao e derivação do saldo
-│   ├── admin.py         # back-office (CRUD)
-│   ├── views.py         # dashboard (indicadores e séries dos gráficos)
-│   ├── urls.py          # rota do dashboard
-│   ├── tests.py         # testes da regra de negócio
-│   └── management/commands/
-│       ├── seed_inventario.py      # carga inicial de dados
-│       └── gerar_documentacao.py   # gera docs/ a partir dos models
-├── templates/           # base.html e inventory/dashboard.html
+## Dashboard
+
+![Dashboard](docs/images/Dashboard.png)
+
+---
+
+## Catálogo de Produtos
+
+![Catálogo](docs/images/catalogo.png)
+
+---
+
+## Auditoria de Movimentações
+
+![Movimentações](docs/images/movimentacoes.png)
+
+---
+
+# Funcionalidades
+
+- Cadastro de categorias
+- Cadastro de produtos
+- Registro de entradas de estoque
+- Registro de saídas de estoque
+- Atualização automática do saldo
+- Dashboard com indicadores
+- Produtos críticos
+- Histórico completo das movimentações
+- Autenticação integrada ao Django Admin
+- Tema claro e escuro
+- Documentação automática do modelo de dados
+- Carga idempotente de dados demonstrativos
+
+---
+
+# Arquitetura
+
+O AutoStock foi desenvolvido utilizando a arquitetura MVC do Django.
+
+Toda a regra de negócio permanece concentrada na aplicação **inventory**, enquanto o projeto **config** contém apenas configurações globais.
+
+O principal conceito do sistema é:
+
+> O estoque nunca é alterado manualmente.
+
+Cada movimentação registrada gera automaticamente uma atualização no saldo do produto.
+
+Essa abordagem elimina inconsistências entre estoque e histórico, mantendo toda movimentação rastreável.
+
+---
+
+# Tecnologias
+
+| Camada | Tecnologia |
+|---------|------------|
+| Backend | Python 3 |
+| Framework | Django 6 |
+| Banco de dados | SQLite |
+| Front-end | Django Templates |
+| Interface | Bootstrap 5 |
+| Gráficos | Chart.js |
+| Configuração | python-dotenv |
+
+---
+
+# Estrutura
+
+```
+AutoStock
+│
+├── config/
+│
+├── inventory/
+│   ├── models.py
+│   ├── admin.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── tests.py
+│   └── management/
+│
+├── templates/
+│
 ├── static/
-│   ├── css/autostock.css           # tema claro/escuro
-│   └── js/                         # tema e gráficos
-├── docs/                # documentação gerada automaticamente
-├── .env.example         # exemplo de configuração local
+│
+├── docs/
+│   └── images/
+│
 ├── manage.py
+│
 └── requirements.txt
 ```
 
-O arquivo `db.sqlite3` é local e não faz parte da árvore versionada.
+---
 
-## Modelo de dados (resumo)
+# Modelo de Dados
 
-- **Category** → **Produto** → **Movimentacao** (entrada/saída).
-- Relações com `on_delete=PROTECT` impedem a exclusão de categorias e produtos em uso.
-- O saldo é derivado: `Movimentacao.save()` aplica a quantidade como entrada ou saída no produto de forma atômica. Somente a criação da movimentação ajusta o saldo; edições não fazem um novo ajuste.
+```
+Categoria
+      │
+      ▼
+ Produto
+      │
+      ▼
+Movimentação
+```
 
-O detalhamento está em [`docs/MODELO_DE_DADOS.md`](docs/MODELO_DE_DADOS.md), gerado a partir dos models.
+Cada movimentação representa uma entrada ou saída de estoque.
 
-## Como executar
+O saldo do produto é atualizado automaticamente utilizando operações atômicas.
 
-Crie e ative um ambiente virtual:
+Categorias e produtos utilizados por movimentações permanecem protegidos contra exclusão, preservando a integridade do histórico.
+
+A documentação completa pode ser regenerada utilizando:
 
 ```bash
-# Windows (PowerShell)
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python manage.py gerar_documentacao
+```
 
-# Linux/macOS
+---
+
+# Instalação
+
+Clone o projeto.
+
+```bash
+git clone https://github.com/LeonardoHRamos/AutoStock
+```
+
+Entre na pasta.
+
+```bash
+cd AutoStock
+```
+
+Crie um ambiente virtual.
+
+Windows
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+Linux
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Instale as dependências:
+Instale as dependências.
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-Crie o arquivo local de configuração a partir do exemplo:
+Crie o arquivo de ambiente.
+
+Windows
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Linux
 
 ```bash
-# Windows (PowerShell)
-Copy-Item .env.example .env
-
-# Linux/macOS
 cp .env.example .env
 ```
 
-Substitua `DJANGO_SECRET_KEY` no `.env` por uma chave aleatória segura. Para uma implantação pública, use também `DJANGO_DEBUG=False` e informe os hosts permitidos em `DJANGO_ALLOWED_HOSTS`, separados por vírgulas.
-
-Prepare e execute a aplicação:
+Execute as migrações.
 
 ```bash
 python manage.py migrate
+```
+
+Crie um usuário administrador.
+
+```bash
 python manage.py createsuperuser
+```
+
+Inicie a aplicação.
+
+```bash
 python manage.py runserver
 ```
 
-O dashboard fica em `http://localhost:8000/` e o admin em `http://localhost:8000/admin/`. O dashboard exige autenticação.
+Dashboard:
 
-## Comandos de gestão
-
-```bash
-python manage.py seed_inventario       # carrega dados iniciais
-python manage.py gerar_documentacao    # regenera a documentação dos models
+```
+http://localhost:8000/
 ```
 
-Use apenas dados demonstrativos. O comando `seed_inventario` ainda precisa ser anonimizado antes da publicação pública.
+Admin:
 
-## Testes
+```
+http://localhost:8000/admin/
+```
+
+---
+
+# Comandos úteis
+
+Carga de dados demonstrativos.
+
+```bash
+python manage.py seed_inventario
+```
+
+Gerar documentação.
+
+```bash
+python manage.py gerar_documentacao
+```
+
+Executar testes.
+
+```bash
+python manage.py test
+```
+
+Verificações do projeto.
 
 ```bash
 python manage.py check
-python manage.py test inventory.tests
-python manage.py makemigrations --check --dry-run
 ```
 
-Os testes existentes cobrem a derivação do saldo em entradas, saídas e edições, além do comportamento da carga inicial.
+---
 
-## Convenções
+# Testes
 
-- Uma funcionalidade por commit, com mensagem descritiva (`feat(...)`, `fix(...)`).
-- A quantidade do produto é atualizada por movimentações.
-- Segredos e configurações locais devem permanecer no `.env`, que não é versionado.
+O projeto possui testes automatizados cobrindo:
 
-## Roadmap / dívida técnica
+- atualização automática do saldo;
+- entradas e saídas;
+- integridade das movimentações;
+- carga inicial de dados;
+- consistência da regra de negócio.
 
-- Implementar validação para impedir estoque negativo.
-- Tornar movimentações imutáveis.
-- Preparar a implantação em produção com PostgreSQL, `DEBUG=False`, hosts restritos, servidor WSGI e backups automatizados.
+---
+
+# Segurança
+
+- `.env` não é versionado.
+- `db.sqlite3` permanece apenas localmente.
+- O projeto utiliza somente dados fictícios.
+- Configurações sensíveis são carregadas por variáveis de ambiente.
+
+---
+
+# Roadmap
+
+- [ ] Validação de estoque negativo
+- [ ] Movimentações imutáveis
+- [ ] PostgreSQL
+- [ ] Docker
+- [ ] API REST
+- [ ] Controle de permissões por perfil
+- [ ] Auditoria avançada
+- [ ] Deploy em produção
+
+---
+
+# Autor
+
+**Leonardo Henrique Ramos**
+
+Software Engineer • Electrical Engineer
+
+Python • Django • JavaScript • Industrial Automation
