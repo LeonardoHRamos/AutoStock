@@ -7,43 +7,43 @@ from inventory.models import Category, Movimentacao, Produto
 
 OBSERVACAO_CARGA = "Carga inicial de inventário"
 
-# (categoria, produto, quantidade) — inventário real.
+# (categoria, produto, quantidade) — dados fictícios para demonstração.
 INVENTARIO = [
-    ("SSDs", "SSD SATA WDGreen 120Gb", 20),
-    ("SSDs", "SSD SATA Kingston 120Gb", 10),
-    ("SSDs", "SSD SATA Macrovip 120Gb", 15),
-    ("Cabos", "Cabo de comunicação SATA", 40),
-    ("Cabos", "Cabo Scanner Datalogic", 13),
-    ("Scanners", "Scanner DataLogic com cabo", 7),
-    ("Scanners", "Scanner DataLogic sem cabo", 3),
-    ("Scanners", "Scanner Keyence (Base e cabos de comunicação)", 40),
-    ("Scanners", "Base Datalogic para Scanner sem fio", 3),
-    ("Sinaleiras", "Sinaleiras Stacklight Verde", 20),
-    ("Sinaleiras", "Sinaleiras Stacklight Amarela", 17),
-    ("Sinaleiras", "Sinaleiras Stacklight Vermelha", 23),
-    ("Sinaleiras", "Sinaleiras Stacklight Buzzer", 6),
-    ("IHMs", "IHM HLT15 Synatec", 6),
-    ("IHMs", "IHM Synatec old", 3),
-    ("IHMs", "IHM ACNode AtlasCopco", 7),
-    ("Baterias", "Baterias Datalogic Scanner sem Fio", 10),
-    ("Baterias", "Baterias Keyence Scanner sem Fio", 40),
-    ("Carregadores", "Carregador de baterias Datalogic", 6),
-    ("Carregadores", "Carregador de baterias Keyence", 40),
-    ("Fontes", "Fonte de IHM HLT15", 11),
-    ("Fontes", "Fonte IHM old", 4),
+    ("Sensores", "Sensor indutivo M12", 14),
+    ("Sensores", "Sensor fotoelétrico compacto", 18),
+    ("Sensores", "Sensor capacitivo industrial", 10),
+    ("Cabos", "Cabo Ethernet industrial", 32),
+    ("Cabos", "Cabo de alimentação industrial", 26),
+    ("Cabos", "Cabo de sinal blindado", 20),
+    ("Fontes", "Fonte 24V DC", 14),
+    ("Fontes", "Fonte compacta para painel", 10),
+    ("Controladores", "Controlador compacto", 8),
+    ("Controladores", "Módulo de entrada digital", 12),
+    ("Controladores", "Módulo de saída digital", 16),
+    ("Interfaces", "Interface de operação", 10),
+    ("Interfaces", "Painel indicador", 14),
+    ("Interfaces", "Conversor de interface", 8),
+    ("Atuadores", "Atuador linear compacto", 15),
+    ("Atuadores", "Relé de interface", 20),
+    ("Atuadores", "Válvula solenoide genérica", 11),
+    ("Componentes de rede", "Switch Ethernet industrial", 14),
+    ("Componentes de rede", "Módulo de comunicação Ethernet", 16),
+    ("Componentes de rede", "Conector de rede industrial", 18),
+    ("Armazenamento", "SSD industrial 240 GB", 19),
+    ("Armazenamento", "Unidade de armazenamento industrial", 19),
 ]
 
 
 class Command(BaseCommand):
-    help = "Carrega o inventário real, criando os saldos via movimentação de entrada."
+    help = "Carrega dados demonstrativos, criando os saldos via entrada."
 
     @transaction.atomic
     def handle(self, *args, **options):
         # 1. Salvaguarda anti-destruição: se houver qualquer movimentação que
-        # não seja da carga inicial, existe histórico real e não podemos apagar.
+        # não seja da carga inicial, existe histórico e não podemos apagar.
         if Movimentacao.objects.exclude(observacao=OBSERVACAO_CARGA).exists():
             self.stderr.write(
-                "Há movimentações reais no banco; seed abortado para não "
+                "Há movimentações adicionais no banco; seed abortado para não "
                 "apagar histórico."
             )
             return
